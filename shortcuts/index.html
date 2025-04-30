@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Web Crypto API example</title>
+</head>
+
+<body>
+    <main>
+        <section class="encrypt-decrypt aes-gcm">
+            <h2 class="encrypt-decrypt-heading">AES-GCM</h2>
+            <section class="encrypt-decrypt-controls">
+                <div class="message-control">
+                    <label for="aes-gcm-message">Enter a message to encrypt:</label>
+                    <input type="text" id="aes-gcm-message" name="message" size="25"
+                        value="The bunny hops at teatime" />
+                </div>
+                <div class="ciphertext">
+                    Ciphertext:<span class="ciphertext-value"></span>
+                </div>
+                <div class="decrypted">
+                    Decrypted:<span class="decrypted-value"></span>
+                </div>
+                <input class="encrypt-button" type="button" value="Encrypt" />
+                <input class="decrypt-button" type="button" value="Decrypt" />
+            </section>
+        </section>
+    </main>
+
+    <script>
+        let iv = new TextEncoder().encode("aes-encrypon-dec");
+
+        function getMessageEncoding() {
+            // const messageBox = document.querySelector("#aes-gcm-message");
+            // let message = messageBox.value;
+            let enc = new TextEncoder();
+            return enc.encode("hello,world");
+        }
+
+        /*
+        Get the encoded message, encrypt it and display a representation
+        of the ciphertext in the "Ciphertext" element.
+        */
+
+        function _arrayBufferToBase64(buffer) {
+            var binary = '';
+            var bytes = new Uint8Array(buffer);
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+
+            const length = binaryString.length;
+            const bytes = new Uint8Array(length);
+
+            for (let i = 0; i < length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+
+            return bytes.buffer;
+        }
+
+        async function encryptMessage(key) {
+            let encoded = getMessageEncoding();
+            // The iv must never be reused with a given key.
+            let ciphertext = await window.crypto.subtle.encrypt(
+                {
+                    name: "AES-GCM",
+                    iv: iv
+                },
+                key,
+                encoded
+            );
+
+            let b64 = _arrayBufferToBase64(ciphertext);
+
+            const ciphertextValue = document.querySelector(".aes-gcm .ciphertext-value");
+            ciphertextValue.classList.add('fade-in');
+            ciphertextValue.addEventListener('animationend', () => {
+                ciphertextValue.classList.remove('fade-in');
+            }, { once: true });
+            // document.write(b64);
+        }
+
+        async function decryptMessage(key) {
+            const ciphertextValue = document.querySelector(".aes-gcm .ciphertext-value");
+            let b64 = ciphertextValue.textContent;
+            let text = base64ToArrayBuffer(b64)
+            let decrypted = await window.crypto.subtle.decrypt(
+                {
+                    name: "AES-GCM",
+                    iv: iv
+                },
+                key,
+                text
+            );
+
+            let dec = new TextDecoder();
+            const decryptedValue = document.querySelector(".aes-gcm .decrypted-value");
+            decryptedValue.classList.add('fade-in');
+            decryptedValue.addEventListener('animationend', () => {
+                decryptedValue.classList.remove('fade-in');
+            }, { once: true });
+            decryptedValue.textContent = dec.decode(decrypted);
+        }
+
+
+        /*
+       Import an AES secret key from an ArrayBuffer containing the raw bytes.
+       Takes an ArrayBuffer string containing the bytes, and returns a Promise
+       that will resolve to a CryptoKey representing the secret key.
+       */
+        const rawKey = new TextEncoder().encode("aes-encrypon-dec");
+        window.crypto.subtle.importKey("raw", rawKey, "AES-GCM", true, [
+            "encrypt",
+            "decrypt",
+        ]).then((key) => {
+            const encryptButton = document.querySelector(".aes-gcm .encrypt-button");
+            encryptButton.addEventListener("click", () => {
+                encryptMessage(key);
+            });
+
+            const decryptButton = document.querySelector(".aes-gcm .decrypt-button");
+            decryptButton.addEventListener("click", () => {
+                decryptMessage(key);
+            });
+            // encryptMessage(key);
+        });
+
+    </script>
+</body>
+
+</html>
