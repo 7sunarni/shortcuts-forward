@@ -1,6 +1,6 @@
 # !/bin/bash
 
-_url="$YOUR_URL"
+_url="https://mn23davtxw233udxyiavggqp6i0igjra.lambda-url.ap-northeast-2.on.aws/"
 
 load_data(){
     for i in {0..10}; do

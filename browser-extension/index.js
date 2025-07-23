@@ -11,7 +11,7 @@ function fetchData() {
             loadButtonEvent = 1
         }
     }
-    fetch('$YOUR_URL')
+    fetch('https://mn23davtxw233udxyiavggqp6i0igjra.lambda-url.ap-northeast-2.on.aws/')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -81,7 +81,7 @@ async function loadWasm(data) {
         WebAssembly.instantiate(bytes, go.importObject)
     ).then(result => {
         go.run(result.instance);
-        var decoded = aes256Decode("$YOUR_KEY", data);
+        var decoded = aes256Decode("2pDk5Dba86QD58x7", data);
         const code = decoded.match(/\d{6}/)?.[0];
 
         const options = {
