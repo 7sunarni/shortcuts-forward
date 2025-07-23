@@ -1,0 +1,45 @@
+{
+    "name": "SMS-Receiver",
+    "description": "This extension let you get encrypted sms from api, then decrypt it and toast a permission",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "action": {
+        "default_popup": "index.html",
+        "persistent": true
+    },
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "*.wasm",
+                "*.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ],
+    "icons": {
+        "16": "icon.png",
+        "32": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    },
+    "commands": {},
+    "permissions": [
+        "contextMenus",
+        "storage",
+        "activeTab",
+        "scripting",
+        "tabs",
+        "notifications",
+        "windows",
+        "clipboardWrite"
+    ],
+    "content_security_policy": {
+        "extension_pages": "default-src 'self' 'wasm-unsafe-eval'; connect-src 'self' $YOUR_URL; style-src 'self' 'unsafe-inline';"
+    }
+}

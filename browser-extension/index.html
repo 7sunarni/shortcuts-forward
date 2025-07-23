@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+        }
+
+        #refresh {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #refresh:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        #refresh:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+
+<body>
+    <button id="refresh">GetNow</button>
+</body>
+
+</html>
