@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import './wasm_exec.js';
 
-var lastItemTs = 0;
+var lastSmsTs = 0;
 var loadButtonEvent = 0;
 
 function fetchData() {
@@ -11,7 +11,13 @@ function fetchData() {
             loadButtonEvent = 1
         }
     }
-    fetch('https://mn23davtxw233udxyiavggqp6i0igjra.lambda-url.ap-northeast-2.on.aws/')
+    
+    chrome.storage.local.get("lastSmsTs").then((result) => {
+        lastSmsTs = result.lastSmsTs;
+    });
+
+    
+    fetch('$YOUR_API')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -25,12 +31,14 @@ function fetchData() {
                 if (!latest) {
                     return
                 }
-                if (lastItemTs >= latest.ts) {
+                if (lastSmsTs >= latest.ts) {
                     return
                 }
                 console.log("decrypt msg", latest.data)
                 decrypt(latest.data)
-                lastItemTs = latest.ts
+                lastSmsTs = latest.ts
+                chrome.storage.local.set({ "lastSmsTs": lastSmsTs }).then(() => {
+                });
             });
         })
         .then(data => {
@@ -49,7 +57,7 @@ function isWorkdayAndWithinHours() {
     const day = now.getDay();
     const hour = now.getHours();
     const isWorkday = day >= 1 && day <= 5;
-    const isInTimeRange = hour >= 9 && hour < 21;
+    const isInTimeRange = hour >= 8 && hour < 21;
     return isWorkday && isInTimeRange;
 }
 
@@ -81,7 +89,7 @@ async function loadWasm(data) {
         WebAssembly.instantiate(bytes, go.importObject)
     ).then(result => {
         go.run(result.instance);
-        var decoded = aes256Decode("2pDk5Dba86QD58x7", data);
+        var decoded = aes256Decode("$YOUR_KEY", data);
         const code = decoded.match(/\d{6}/)?.[0];
 
         const options = {

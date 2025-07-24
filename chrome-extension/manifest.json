@@ -40,6 +40,6 @@
         "clipboardWrite"
     ],
     "content_security_policy": {
-        "extension_pages": "default-src 'self' 'wasm-unsafe-eval'; connect-src 'self' https://mn23davtxw233udxyiavggqp6i0igjra.lambda-url.ap-northeast-2.on.aws; style-src 'self' 'unsafe-inline';"
+        "extension_pages": "default-src 'self' 'wasm-unsafe-eval'; connect-src 'self' $YOUR_API; style-src 'self' 'unsafe-inline';"
     }
 }

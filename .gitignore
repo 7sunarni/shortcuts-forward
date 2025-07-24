@@ -1,2 +1,2 @@
-browser-extension/main.wasm
-browser-extension/wasm_exec.js
+chrome-extension/main.wasm
+chrome-extension/wasm_exec.js
