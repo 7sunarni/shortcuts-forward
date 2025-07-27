@@ -2,21 +2,16 @@
 import './wasm_exec.js';
 
 var lastSmsTs = 0;
-var loadButtonEvent = 0;
+
+if (typeof document !== 'undefined') {
+    document.getElementById("refresh").addEventListener("click", fetchData);
+}
 
 function fetchData() {
-    if (loadButtonEvent == 0) {
-        if (typeof document !== 'undefined') {
-            document.getElementById("refresh").addEventListener("click", fetchData);
-            loadButtonEvent = 1
-        }
-    }
-    
     chrome.storage.local.get("lastSmsTs").then((result) => {
         lastSmsTs = result.lastSmsTs;
     });
 
-    
     fetch('$YOUR_API')
         .then(response => {
             if (!response.ok) {
