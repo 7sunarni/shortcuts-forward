@@ -1,0 +1,15 @@
+{
+  "compatibility_date": "2025-04-01",
+  "main": "server/cloudflare/src/index.ts",
+  "name": "sms-forward",
+  "upload_source_maps": true,
+  "observability": {
+    "enabled": true
+  },
+  "kv_namespaces": [
+    {
+      "binding": "forward",
+      "id": "1783b1cb32944ec3bd5bcb9b03d4d565"
+    }
+  ]
+}
