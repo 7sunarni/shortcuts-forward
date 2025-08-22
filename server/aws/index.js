@@ -9,8 +9,8 @@ const statusInternalServerError = '500';
 const headers = {
     'Content-Type': 'text/plain',
     "Access-Control-Allow-Origin": "*",
-	"Access-Control-Allow-Methods": "POST, OPTIONS",
-	"Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
 export const handler = async (event, context) => {
@@ -48,7 +48,7 @@ export const handler = async (event, context) => {
 
 
 async function get() {
-    console.log("[get]: prepare to get")  
+    console.log("[get]: prepare to get")
     let statusCode = statusOK;
     let body;
     let ts = Date.now();
@@ -71,8 +71,7 @@ async function get() {
     } finally {
 
     }
-    await clear()
-    console.log("[get]: get success")  
+    console.log("[get]: get success")
     return {
         statusCode,
         body,
@@ -81,7 +80,7 @@ async function get() {
 }
 
 async function put(sms) {
-    console.log("[put]: ready to put")  
+    console.log("[put]: ready to put")
     let ts = Date.now();
     let statusCode = statusOK;
     let body;
@@ -92,7 +91,9 @@ async function put(sms) {
             id: ts,
             ts: ts,
             data: sms,
+            expirationTtl: Math.floor(Date.now() / 1000) + 60 * 60,
         },
+
     }
     try {
         await dynamo.put(msg);
@@ -103,43 +104,9 @@ async function put(sms) {
     } finally {
 
     }
-    await clear()
     return {
         statusCode,
         body,
         headers,
     };
-}
-
-async function clear() {
-    console.log("[clear]: ready to clear");
-    let ts = Date.now();
-    ts = ts - 1000 * 60 * 60;
-
-    const params = {
-        TableName: tableName,
-        FilterExpression: "ts < :ts",
-        ExpressionAttributeValues: {
-            ":ts": ts,
-        }
-    }
-    try {
-        let scaned = await dynamo.scan(params);
-        for (let item of scaned.Items) {
-            console.log("[clear]: delete item: ", item.id);
-            const command = new DeleteCommand({
-                TableName: tableName,
-                Key: {
-                    ts: item.id,
-                    id: item.ts,
-                },
-            });
-            await dynamo.send(command);
-        }
-    } catch (err) {
-        console.log("[clear]: delete item failed: ", err)
-    } finally {
-
-    }
-    console.log("[clear]: finish clear")
 }
