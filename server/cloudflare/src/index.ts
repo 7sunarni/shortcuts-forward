@@ -18,50 +18,28 @@ function json(data: unknown, init: ResponseInit = {}) {
   });
 }
 
-function text(msg: string, status = 400) {
-  return new Response(msg, { status, headers: { ...corsHeaders } });
-}
-
-async function readJson<T = Json>(req: Request): Promise<T> {
-  try {
-    return (await req.json()) as T;
-  } catch {
-    throw new Error("Invalid JSON body");
-  }
-}
-
-function ttlFrom(req: Request, env: Env): number | undefined {
-  const url = new URL(req.url);
-  const ttlQ = url.searchParams.get("ttl");
-  const ttlEnv = Number(env.DEFAULT_TTL || 0) || 0;
-  const ttl = ttlQ !== null ? Number(ttlQ) : ttlEnv;
-  return ttl > 0 ? ttl : undefined;
-}
-
-const statusOK = '200';
-const headers = {
-  'Content-Type': 'text/plain',
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
-
-
 async function get(req: Request, env: Env): Promise<Response> {
   console.log("[get]: prepare to get")
-  let statusCode = statusOK;
-  let body;
-  let ts = Date.now();
-  ts = ts - 1000 * 60 * 10;
+  const list = await env.forward.list();
 
-  return json({ key: "", ok: true });
+  const results = [] as {
+    id: number;
+    ts: number;
+    data: string;
+  }[];
 
+  for (const key of list.keys) {
+    const data = await env.forward.get(key.name, "json");
+    results.push({ id: Number(key.name), ts: Number(key.name), data: data.sms });
+  }
+
+  return json(results);
 }
 
 async function put(req: Request, env: Env): Promise<Response> {
   console.log("[put]: ready to put")
   const kvKey = Date.now().toString();
-  const data = await req.json(); 
+  const data = await req.json();
   await env.forward.put(kvKey, JSON.stringify(data), {
     expirationTtl: 60 * 10,
   });
@@ -72,12 +50,8 @@ async function put(req: Request, env: Env): Promise<Response> {
 
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
-    console.log("fetch",req)
+    console.log("fetch", req)
     if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-
-    const url = new URL(req.url);
-    const path = url.pathname.replace(/\/+$/, ""); // trim trailing slash
-
 
     if (req.method === "GET") {
       return get(req, env);

@@ -4,7 +4,8 @@
   "name": "sms-forward",
   "upload_source_maps": true,
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "head_sampling_rate": 1
   },
   "kv_namespaces": [
     {
